@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThreatLens - AI-Powered Malware Detection & Digital Forensics Platform</title>
+    <!-- Google Fonts for futuristic & clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Orbitron:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-shield-halved brand-icon"></i>
+                <div class="brand-text">
+                    <h1>ThreatLens</h1>
+                    <span style="font-size: 8px; line-height: 1.2; display: block; margin-top: 2px; text-transform: none; letter-spacing: 0.5px;">AI-Powered Malware Detection and Digital Forensics Platform</span>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#dashboard" class="nav-item active" data-tab="dashboard">
+                    <i class="fa-solid fa-chart-line nav-icon"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#scanner" class="nav-item" data-tab="scanner">
+                    <i class="fa-solid fa-crosshairs nav-icon"></i>
+                    <span>Manual Scanner</span>
+                </a>
+                <a href="#monitor" class="nav-item" data-tab="monitor">
+                    <i class="fa-solid fa-folder-open nav-icon"></i>
+                    <span>Folder Monitor</span>
+                </a>
+                <a href="#vault" class="nav-item" data-tab="vault">
+                    <i class="fa-solid fa-database nav-icon"></i>
+                    <span>Forensic Vault</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-bottom" style="display: flex; flex-direction: column; gap: 12px; margin-top: auto; border-top: 1px solid rgba(0, 0, 0, 0.05); padding-top: 16px;">
+                <div class="monitor-badge">
+                    <div class="status-dot inactive" id="monitor-status-dot"></div>
+                    <span id="monitor-status-text">Monitor: Inactive</span>
+                </div>
+                <div style="display: flex; justify-content: flex-start; padding: 0 4px;">
+                    <a href="#settings" class="nav-item settings-gear-btn" data-tab="settings" id="sidebar-settings-gear" title="Platform Settings">
+                        <i class="fa-solid fa-gear nav-icon"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-title">
+                    <h2 id="page-title">Operational Dashboard</h2>
+                    <p id="page-subtitle">Platform overview and threat monitoring telemetry.</p>
+                </div>
+                <div class="connection-status">
+                    <span class="badge badge-success"><i class="fa-solid fa-server"></i> System Online</span>
+                </div>
+            </header>
+
+            <!-- Notification Area -->
+            <div id="notification-container" class="notification-container"></div>
+
+            <!-- Dashboard View -->
+            <section id="tab-dashboard" class="tab-pane active">
+                <div class="kpi-grid">
+                    <div class="kpi-card glass">
+                        <div class="kpi-info">
+                            <span class="kpi-label">Total Scanned</span>
+                            <h3 class="kpi-value" id="stat-total">0</h3>
+                        </div>
+                        <div class="kpi-icon blue"><i class="fa-solid fa-file-shield"></i></div>
+                    </div>
+                    <div class="kpi-card glass threat">
+                        <div class="kpi-info">
+                            <span class="kpi-label">Malicious Files</span>
+                            <h3 class="kpi-value text-danger" id="stat-malicious">0</h3>
+                        </div>
+                        <div class="kpi-icon red"><i class="fa-solid fa-bug-slash"></i></div>
+                    </div>
+                    <div class="kpi-card glass warning">
+                        <div class="kpi-info">
+                            <span class="kpi-label">Suspicious Files</span>
+                            <h3 class="kpi-value text-warning" id="stat-suspicious">0</h3>
+                        </div>
+                        <div class="kpi-icon amber"><i class="fa-solid fa-circle-exclamation"></i></div>
+                    </div>
+                    <div class="kpi-card glass zero-day">
+                        <div class="kpi-info">
+                            <span class="kpi-label">Zero-Day Threats</span>
+                            <h3 class="kpi-value text-cyan" id="stat-zerodays">0</h3>
+                        </div>
+                        <div class="kpi-icon cyan"><i class="fa-solid fa-burst"></i></div>
+                    </div>
+                    <div class="kpi-card glass score">
+                        <div class="kpi-info">
+                            <span class="kpi-label">Avg Threat Score</span>
+                            <h3 class="kpi-value" id="stat-avgscore">0.0</h3>
+                        </div>
+                        <div class="kpi-icon green" id="stat-avgscore-icon"><i class="fa-solid fa-gauge-high"></i></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Chart Section -->
+                    <div class="dashboard-card glass col-span-2">
+                        <div class="card-header">
+                            <h4>Threat Risk Distribution</h4>
+                            <span>Analyzed files categorized by overall severity</span>
+                        </div>
+                        <div class="chart-container">
+                            <div class="donut-chart-wrapper">
+                                <canvas id="riskDonutChart" width="200" height="200"></canvas>
+                                <div class="chart-legend" id="donut-legend"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Activity Section -->
+                    <div class="dashboard-card glass">
+                        <div class="card-header">
+                            <h4>Forensic Timeline Activity</h4>
+                            <span>Scan executions completed over the last 7 days</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="timelineBarChart" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Recent Alerts Table -->
+                    <div class="dashboard-card glass col-span-3">
+                        <div class="card-header">
+                            <h4>Recent Alerts & Investigations</h4>
+                            <a href="#vault" class="view-all-link" id="view-vault-link">View All Evidence Vault</a>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" id="recent-scans-table">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Filename</th>
+                                        <th>File Type</th>
+                                        <th>Threat Score</th>
+                                        <th>Risk Level</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="6" class="text-center">No forensic records found. Perform a scan or start monitoring.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Manual Scanner View -->
+            <section id="tab-scanner" class="tab-pane">
+                <div class="scanner-container">
+                    <div class="scanner-upload-card glass">
+                        <div class="drag-zone" id="drag-zone">
+                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                            <h3>Drag & Drop Suspicious File</h3>
+                            <p>or click to browse your filesystem</p>
+                            <span class="file-hint">Supports EXE, DLL, ZIP, PDF, Scripts and more</span>
+                            <input type="file" id="file-input" style="display: none;">
+                        </div>
+                        <div class="upload-progress-container" id="upload-progress-container" style="display: none;">
+                            <div class="progress-details">
+                                <span id="upload-filename">suspicious_file.exe</span>
+                                <span id="upload-percentage">0%</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                            </div>
+                            <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                                <button class="btn btn-small btn-secondary" id="btn-cancel-upload" style="color: var(--neon-red); border-color: rgba(224,36,94,0.15);"><i class="fa-solid fa-ban"></i> Cancel Scan</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scan Pipeline Steps -->
+                    <div class="scan-pipeline-card glass" id="scan-pipeline-card" style="display: none;">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h4>Forensic Pipeline Processing</h4>
+                                <span>Real-time execution layers</span>
+                            </div>
+                            <button class="btn btn-small btn-secondary" id="btn-cancel-scan" style="color: var(--neon-red); border-color: rgba(224,36,94,0.15);"><i class="fa-solid fa-ban"></i> Cancel Scan</button>
+                        </div>
+                        <div class="pipeline-steps">
+                            <div class="pipeline-step" id="step-acquisition">
+                                <div class="step-indicator"><i class="fa-solid fa-spinner fa-spin"></i></div>
+                                <div class="step-details">
+                                    <h5>Evidence Acquisition</h5>
+                                    <p>Gathering metadata (timestamps, file size, filesystem paths)</p>
+                                </div>
+                            </div>
+                            <div class="pipeline-step" id="step-hashing">
+                                <div class="step-indicator"><i class="fa-regular fa-circle"></i></div>
+                                <div class="step-details">
+                                    <h5>Cryptographic Hash Ledger</h5>
+                                    <p>Generating MD5, SHA-1, and SHA-256 signatures</p>
+                                </div>
+                            </div>
+                            <div class="pipeline-step" id="step-ml">
+                                <div class="step-indicator"><i class="fa-regular fa-circle"></i></div>
+                                <div class="step-details">
+                                    <h5>Machine Learning structural PE Classifier</h5>
+                                    <p>Extracting 23 optional header features & Random Forest prediction</p>
+                                </div>
+                            </div>
+                            <div class="pipeline-step" id="step-yara">
+                                <div class="step-indicator"><i class="fa-regular fa-circle"></i></div>
+                                <div class="step-details">
+                                    <h5>YARA Rule Matching</h5>
+                                    <p>Scanning byte blocks for packed or suspicious execution footprints</p>
+                                </div>
+                            </div>
+                            <div class="pipeline-step" id="step-vt">
+                                <div class="step-indicator"><i class="fa-regular fa-circle"></i></div>
+                                <div class="step-details">
+                                    <h5>VirusTotal Global Intelligence</h5>
+                                    <p>Querying reputational database (bypassed gracefully if key missing)</p>
+                                </div>
+                            </div>
+                            <div class="pipeline-step" id="step-reporting">
+                                <div class="step-indicator"><i class="fa-regular fa-circle"></i></div>
+                                <div class="step-details">
+                                    <h5>AI Investigation Report</h5>
+                                    <p>Synthesizing findings via local Llama-3 (expert fallback if offline)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Immediate Result Preview -->
+                    <div class="scan-result-card glass" id="scan-result-card" style="display: none;">
+                        <div class="result-summary">
+                            <div class="result-score-gauge">
+                                <div class="gauge-center">
+                                    <h2 id="result-score-value">78</h2>
+                                    <span>Score</span>
+                                </div>
+                            </div>
+                            <div class="result-text">
+                                <span class="badge" id="result-risk-badge">HIGH RISK</span>
+                                <h3 id="result-filename">bank_statement.zip.exe</h3>
+                                <p>SHA256: <code id="result-hash">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</code></p>
+                            </div>
+                            <div class="result-actions">
+                                <button class="btn btn-primary" id="btn-view-scan-report"><i class="fa-solid fa-file-invoice"></i> Open Forensic Report</button>
+                                <button class="btn btn-secondary" id="btn-reset-scanner">Scan Another File</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Folder Monitor View -->
+            <section id="tab-monitor" class="tab-pane">
+                <div class="monitor-panel-grid">
+                    <!-- Monitor Controller -->
+                    <div class="dashboard-card glass col-span-2">
+                        <div class="card-header">
+                            <h4>Real-Time Folder Watcher Setup</h4>
+                            <span>Direct directory monitoring node</span>
+                        </div>
+                        <div class="monitor-setup-form">
+                            <div class="form-group">
+                                <label for="monitor-path-input">Folder Path to Monitor:</label>
+                                <div class="input-action-group">
+                                    <input type="text" id="monitor-path-input" placeholder="e.g. C:\Users\YourUser\Downloads" class="form-control">
+                                    <button class="btn btn-success" id="btn-start-monitor"><i class="fa-solid fa-play"></i> Start Monitoring</button>
+                                    <button class="btn btn-danger" id="btn-stop-monitor" style="display: none;"><i class="fa-solid fa-stop"></i> Stop Monitoring</button>
+                                </div>
+                                <small class="form-text">All new files placed or downloaded into this folder will be intercepted and analyzed by the platform automatically.</small>
+                            </div>
+                            
+                            <div class="monitor-details-box" id="monitor-details-box" style="display: none;">
+                                <div class="detail-row">
+                                    <span>Current Status:</span>
+                                    <span class="badge badge-success" id="monitor-status-badge">ACTIVE</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Monitored Path:</span>
+                                    <strong id="monitor-active-path">C:\Users\rajab\Downloads</strong>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Files In Queue:</span>
+                                    <span class="badge badge-info" id="monitor-queue-badge">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Card for Monitor -->
+                    <div class="dashboard-card glass">
+                        <div class="card-header">
+                            <h4>Prometheus Dashboard Sync</h4>
+                            <span>Operational stats</span>
+                        </div>
+                        <div class="monitor-stats">
+                            <div class="monitor-stat-item">
+                                <span class="mon-stat-label">Prometheus Metrics Port:</span>
+                                <span class="mon-stat-val text-cyan">5000</span>
+                            </div>
+                            <div class="monitor-stat-item">
+                                <span class="mon-stat-label">Exporter Endpoint:</span>
+                                <a href="/metrics" target="_blank" class="mon-stat-val text-blue">/metrics <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                            </div>
+                            <p class="mon-description">Metrics are fully compliant with Prometheus format. Link your Prometheus instance to this target, and visual dashboards can be configured directly inside your Grafana instance.</p>
+                        </div>
+                    </div>
+
+                    <!-- Live Log Console -->
+                    <div class="dashboard-card glass col-span-3">
+                        <div class="card-header">
+                            <h4>Watcher Event CLI Console</h4>
+                            <button class="btn btn-small btn-secondary" id="btn-clear-console">Clear Console</button>
+                        </div>
+                        <div class="terminal-wrapper">
+                            <div class="terminal-logs" id="terminal-logs">
+                                <div class="log-line system">[SYSTEM] ThreatLens digital forensics agent loaded. Ready to monitor.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Forensic Vault View -->
+            <section id="tab-vault" class="tab-pane">
+                <div class="vault-container glass">
+                    <div class="vault-header">
+                        <div class="vault-search-box">
+                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                            <input type="text" id="vault-search" placeholder="Search by filename, hash, or risk level..." class="form-control">
+                        </div>
+                        <div class="vault-filters">
+                            <button class="filter-btn active" data-filter="all">All Scans</button>
+                            <button class="filter-btn" data-filter="Malicious">Malicious</button>
+                            <button class="filter-btn" data-filter="Suspicious">Suspicious</button>
+                            <button class="filter-btn" data-filter="Safe">Safe</button>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="data-table" id="vault-table">
+                            <thead>
+                                <tr>
+                                    <th>Scan Date</th>
+                                    <th>Filename</th>
+                                    <th>SHA256 Hash</th>
+                                    <th>Threat Score</th>
+                                    <th>Risk Level</th>
+                                    <th>ML Pred</th>
+                                    <th>YARA</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="8" class="text-center">Loading vault database...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings View -->
+            <section id="tab-settings" class="tab-pane">
+                <div class="settings-grid">
+                    <!-- AI Reporter settings -->
+                    <div class="dashboard-card glass col-span-3">
+                        <div class="card-header">
+                            <h4>LLM & AI Report Generator Settings</h4>
+                            <span>Configure target LLM engine/provider, server URL, and model tag</span>
+                        </div>
+                        <div class="settings-form" style="max-width: 600px;">
+                            <div class="form-group">
+                                <label for="setting-llm-provider">LLM Engine / Provider:</label>
+                                <input type="text" id="setting-llm-provider" list="llm-providers" placeholder="ollama" class="form-control">
+                                <datalist id="llm-providers">
+                                    <option value="ollama">Ollama (Local LLM - Primary)</option>
+                                    <option value="gemini">Google Gemini API (Cloud - Secondary)</option>
+                                    <option value="openai">OpenAI / Compatible API (Local/Cloud)</option>
+                                </datalist>
+                                <small class="form-text">Type or select your LLM provider (e.g., <code>ollama</code>, <code>gemini</code>, <code>openai</code>).</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="setting-llm-url">LLM Server URL:</label>
+                                <input type="text" id="setting-llm-url" placeholder="http://localhost:11434" class="form-control">
+                                <small class="form-text">Server API endpoint URL (not required for Gemini API Cloud).</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="setting-llm-model">LLM Model:</label>
+                                <input type="text" id="setting-llm-model" placeholder="llama3" class="form-control">
+                                <small class="form-text">Configure model tag (e.g., <code>llama3</code>, <code>gemini-1.5-flash</code>, <code>gpt-4o</code>, <code>mistral</code>).</small>
+                            </div>
+                            
+                            <button class="btn btn-primary" id="btn-save-settings" style="margin-top: 12px; width: fit-content;"><i class="fa-solid fa-floppy-disk"></i> Save Configurations</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Forensic Detailed Report Modal (Sliding Panel) -->
+    <div class="forensic-modal-overlay" id="report-modal">
+        <div class="forensic-modal">
+            <header class="modal-header">
+                <div class="modal-title">
+                    <h3>Forensic Audit Report</h3>
+                    <span id="modal-subtitle">ID: 12 | Filename: invoice.exe</span>
+                </div>
+                <button class="btn-close-modal" id="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </header>
+            
+            <div class="modal-body">
+                <div class="modal-tabs">
+                    <button class="modal-tab-btn active" data-modaltab="summary">Report Summary</button>
+                    <button class="modal-tab-btn" data-modaltab="ai-report">AI Forensic Report</button>
+                    <button class="modal-tab-btn" data-modaltab="raw-telemetry">Raw JSON Telemetry</button>
+                </div>
+                
+                <!-- Tab: Summary -->
+                <div class="modal-tab-pane active" id="modal-pane-summary">
+                    <div class="report-overview-grid">
+                        <div class="score-card-wrapper glass">
+                            <h5>Overall Threat Score</h5>
+                            <div class="large-score-gauge" id="modal-score-gauge">
+                                <h2 id="modal-threat-score">78</h2>
+                                <span id="modal-risk-level">HIGH RISK</span>
+                            </div>
+                        </div>
+                        
+                        <div class="details-card-wrapper glass col-span-2">
+                            <h5>Preserved File Metadata</h5>
+                            <div class="metadata-table-wrapper">
+                                <table class="metadata-table">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Filename</strong></td>
+                                            <td id="m-filename">invoice.exe</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Vault Path</strong></td>
+                                            <td class="word-break" id="m-filepath">d:\PROJECTS\evidence_vault\hash.exe</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>File Size</strong></td>
+                                            <td id="m-filesize">2.4 MB</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Discovered Date</strong></td>
+                                            <td id="m-scandate">2026-06-13 15:30:10</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Creation Date</strong></td>
+                                            <td id="m-creationtime">2026-05-10 11:20:44</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>File Type</strong></td>
+                                            <td id="m-filetype">Windows Executable (PE)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Chain of Custody (Hashes) -->
+                        <div class="hashes-card glass col-span-3">
+                            <h5>Cryptographic Hashes (Chain of Custody Ledger)</h5>
+                            <div class="hash-row">
+                                <span class="hash-lbl">MD5</span>
+                                <code id="m-md5">d41d8cd98f00b204e9800998ecf8427e</code>
+                            </div>
+                            <div class="hash-row">
+                                <span class="hash-lbl">SHA-1</span>
+                                <code id="m-sha1">da39a3ee5e6b4b0d3255bfef95601890afd80709</code>
+                            </div>
+                            <div class="hash-row">
+                                <span class="hash-lbl">SHA-256</span>
+                                <code id="m-sha256">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</code>
+                            </div>
+                        </div>
+                        
+                        <!-- Analysis Vectors details -->
+                        <div class="vector-card glass">
+                            <h5>ML PE Classifier</h5>
+                            <div class="vector-status" id="m-ml-status">
+                                <span class="lbl">Prediction</span>
+                                <strong class="val text-danger" id="m-ml-pred">Malware</strong>
+                            </div>
+                            <div class="vector-status" id="m-ml-confidence-wrapper">
+                                <span class="lbl">Confidence</span>
+                                <span class="val" id="m-ml-conf">98%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="vector-card glass">
+                            <h5>YARA Rule Signatures</h5>
+                            <div class="vector-status">
+                                <span class="lbl">Matched Rules</span>
+                                <strong class="val" id="m-yara-matches-count">2 Matches</strong>
+                            </div>
+                            <ul class="yara-matches-list" id="m-yara-list">
+                                <li>UPX_Packed</li>
+                                <li>Suspicious_Process_Injection_APIs</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="vector-card glass">
+                            <h5>VirusTotal reputation</h5>
+                            <div class="vector-status">
+                                <span class="lbl">Detections</span>
+                                <strong class="val" id="m-vt-detections">14 / 70 Engines</strong>
+                            </div>
+                            <div class="vector-status">
+                                <span class="lbl">Status</span>
+                                <span class="val text-warning" id="m-vt-status">Success</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab: AI Report -->
+                <div class="modal-tab-pane" id="modal-pane-ai-report">
+                    <div class="ai-markdown-report" id="m-ai-report-content">
+                        <!-- AI Report Markdown rendered dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Tab: Raw JSON -->
+                <div class="modal-tab-pane" id="modal-pane-raw-telemetry">
+                    <pre class="raw-json-viewer"><code id="m-raw-json">{}</code></pre>
+                </div>
+            </div>
+            
+            <footer class="modal-footer">
+                <button class="btn btn-secondary" id="btn-print-report"><i class="fa-solid fa-print"></i> Print Report</button>
+                <button class="btn btn-danger" id="btn-modal-delete"><i class="fa-solid fa-trash-can"></i> Delete Evidence</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Chart.js for Timeline bar and Donut chart -->
+    <!-- Self contained, fallback checks will prevent failure if offline -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
