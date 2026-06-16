@@ -1,0 +1,9 @@
+Flask==3.0.3
+pandas==2.2.3
+pefile==2024.8.26
+scikit-learn==1.7.0
+joblib==1.4.2
+requests==2.32.3
+watchdog==4.0.0
+yara-python==4.5.0
+prometheus_client==0.22.0
