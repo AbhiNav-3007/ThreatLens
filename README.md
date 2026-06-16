@@ -165,7 +165,7 @@ docker compose -f metrics/docker-compose.yml up -d
 ---
 
 ## 📜 Credits & Attributions
-ThreatLens integrates and extends the machine learning model weights (`malwareclassifier-V2.pkl`) and PE feature extraction logic developed by **[0xfke](https://github.com/0xfke)** and **[latiko](https://github.com/latiko)** in their project: [Malware-Detection-and-Analysis-using-Machine-Learning](https://github.com/0xfke/Malware-Detection-and-Analysis-using-Machine-Learning).
+ThreatLens integrates and extends the machine learning model weights (`malwareclassifier-V2.pkl`) and PE feature extraction logic developed by **[0xfke](https://github.com/0xfke)** in their project: [Malware-Detection-and-Analysis-using-Machine-Learning](https://github.com/0xfke/Malware-Detection-and-Analysis-using-Machine-Learning).
 
 ---
 
