@@ -1,0 +1,34 @@
+# ThreatLens Ignore Settings
+
+# Secrets & Local Configurations
+.env
+
+# Forensic Database
+forensics.db
+
+# Ingestion & Archives
+uploads/
+evidence_vault/
+
+# Python Cache & Builds
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# Editor Settings
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+
+metrics/
