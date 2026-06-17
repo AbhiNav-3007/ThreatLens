@@ -424,11 +424,7 @@ def run_analysis_pipeline(file_path):
         ai_report_content = llm_reporter.generate_report(evidence_data)
         
         # Update record in DB with completed AI report
-        conn = db_manager.get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute('UPDATE evidence SET ai_report = ? WHERE id = ?', (ai_report_content, inserted_id))
-        conn.commit()
-        conn.close()
+        db_manager.update_evidence_ai_report(inserted_id, ai_report_content)
         
         evidence_data['ai_report'] = ai_report_content
         return evidence_data

@@ -74,11 +74,7 @@ def api_scan():
                 print(f"Warning: Could not remove temporary file {temp_path} due to OS lock: {e}")
                 
             # Update database to point to the vault file
-            conn = db_manager.get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute('UPDATE evidence SET filepath = ? WHERE id = ?', (vault_path, result['id']))
-            conn.commit()
-            conn.close()
+            db_manager.update_evidence_filepath(result['id'], vault_path)
             result['filepath'] = vault_path
             
             # Record Prometheus Metrics
@@ -153,11 +149,7 @@ def api_evidence_delete(evidence_id):
         
     try:
         # Delete from DB
-        conn = db_manager.get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute('DELETE FROM evidence WHERE id = ?', (evidence_id,))
-        conn.commit()
-        conn.close()
+        db_manager.delete_evidence(evidence_id)
         
         # Delete vault file if exists
         vault_path = evidence.get('filepath', '')
