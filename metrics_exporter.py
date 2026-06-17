@@ -56,7 +56,7 @@ def init_metrics():
         MONITOR_ACTIVE.set(active)
         
         metrics_initialized = True
-        print("Prometheus metrics initialized from SQLite.")
+        print("Prometheus metrics initialized from MySQL.")
     except Exception as e:
         print(f"Failed to initialize metrics: {e}")
 

@@ -32,7 +32,7 @@ An automated folder observer powered by native OS filesystem signals:
 
 ### 🏛️ 3. Evidence Archiving & Chain-of-Custody
 ThreatLens is built to preserve evidence for legal or organizational forensic audits:
-*   **SQLite Ledger**: Saves file paths, MD5/SHA-1/SHA-256 hashes, file sizes, creation times, and analysis metrics in a structured local database ([forensics.db](file:///d:/STUDY%20MATERIAL/PROJECTS/Digital%20forensics%20project/Malware%20detection%20and%20digital%20forensics%20platform%20using%20ML/forensics.db)).
+*   **MySQL Database Ledger**: Saves file paths, MD5/SHA-1/SHA-256 hashes, file sizes, creation times, and analysis metrics in a structured local/cloud MySQL database (automatically initialized at startup).
 *   **SHA-256 Vault Renaming**: Flags and archives threats in an isolated `evidence_vault/` directory, renaming them to their SHA-256 hash value to prevent duplication and preserve integrity.
 
 ---

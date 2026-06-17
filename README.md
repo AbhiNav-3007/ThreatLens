@@ -32,7 +32,7 @@ graph TD
     subgraph Operational Reporting & Preservation
         F1["Generative AI Analyst (Ollama / Gemini / OpenAI)"]
         F2["Chain-of-Custody Vault (SHA-256 Renaming)"]
-        F3["Persistent Forensic Log (SQLite Database)"]
+        F3["Persistent Forensic Log (MySQL Database)"]
     end
     
     F1 & F2 & F3 --> G["DevOps Observability Dashboard (Prometheus / Grafana)"]
@@ -105,7 +105,7 @@ Integrates three Generative AI endpoints to synthesize security telemetry:
 
 ### 4. Chain-of-Custody Archiving
 When a threat is processed:
-1.  Telemetry is saved in the SQLite database [forensics.db](file:///d:/STUDY%20MATERIAL/PROJECTS/Digital%20forensics%20project/Malware%20detection%20and%20digital%20forensics%20platform%20using%20ML/forensics.db).
+1.  Telemetry is saved in a local/cloud **MySQL database** (automatically initialized at startup).
 2.  The target file is copied to an isolated directory `evidence_vault/`.
 3.  The file is renamed to its unique SHA-256 hash value (preserving cryptographic integrity and preventing duplicates).
 
@@ -141,26 +141,44 @@ VIRUSTOTAL_API_KEY=your_virustotal_key_here
 # Generative AI Reporting Config
 GEMINI_API_KEY=your_gemini_key_here
 OPENAI_API_KEY=your_openai_key_here
+
+# MySQL Database Config
+MYSQL_HOST=localhost
+MYSQL_USER=root
+MYSQL_PASSWORD=your_mysql_password
+MYSQL_DATABASE=threatlens
+MYSQL_PORT=3306
+# Optional for GCP Cloud Run deployments:
+# MYSQL_UNIX_SOCKET=/cloudsql/project-id:region:instance-id
 ```
 
-### Running the App
-1.  **Start the local LLM** (if using Ollama):
+### Running the App Locally
+1.  **Ensure MySQL is running** (e.g. via XAMPP or native Windows service).
+2.  **Start the local LLM** (if using Ollama):
     ```bash
     ollama run llama3
     ```
-2.  **Launch the Flask application**:
+3.  **Launch the Flask application**:
     ```bash
     python app.py
     ```
-3.  Open [http://localhost:5000](http://localhost:5000) in your browser.
+4.  Open [http://localhost:5000](http://localhost:5000) in your browser.
 
-### Deploying Metrics (Docker)
-Ensure Docker is running, then start the monitoring containers:
+### Deploying with Docker (Application + MySQL Database)
+To spin up both the Flask application and a MySQL database container automatically:
+```bash
+docker compose up --build -d
+```
+*   **ThreatLens Web App**: [http://localhost:5000](http://localhost:5000)
+*   **MySQL Server**: Running on port `3306`
+
+### Deploying Metrics Observability (Optional)
+Start the Prometheus & Grafana monitoring containers:
 ```bash
 docker compose -f metrics/docker-compose.yml up -d
 ```
-*   **Prometheus**: [http://localhost:9090](http://localhost:9090) (Scrapes data from the Flask `/metrics` endpoint).
-*   **Grafana Dashboard**: [http://localhost:3000](http://localhost:3000) (Default login: `admin` / `admin`).
+*   **Prometheus**: [http://localhost:9090](http://localhost:9090)
+*   **Grafana Dashboard**: [http://localhost:3000](http://localhost:3000) (Login: `admin` / `admin`)
 
 ---
 
